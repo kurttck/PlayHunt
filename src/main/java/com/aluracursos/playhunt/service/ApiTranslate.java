@@ -25,7 +25,7 @@ public class ApiTranslate {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create("https://deep-translate1.p.rapidapi.com/language/translate/v2"))
-                .header("x-rapidapi-key", "de1d84bd43msha4ffcee32a81131p14ff80jsne4738fd14f2d")
+                .header("x-rapidapi-key", "KEY_DEEPTRANSLATE")
                 .header("x-rapidapi-host", "deep-translate1.p.rapidapi.com")
                 .header("Content-Type", "application/json")
                 .method("POST", HttpRequest.BodyPublishers.ofString(jsonBody))
