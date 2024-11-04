@@ -50,7 +50,7 @@ PlayHunt Game Manager te ofrece varias funcionalidades para explorar y descubrir
 ## 🚀 Cómo Empezar
 
 1. Clona este repositorio: `git clone https://github.com/tu_usuario/playhunt-game-manager.git`
-2. Configura las claves API para [RAWG](https://rawg.io/apidocs) y [DeepTranslate](https://rapidapi.com/deep-translate-api-deep-translate-api-default/api/deep-translate).
+2. Configura las claves API para [RAWG](https://rawg.io/apidocs) y [DeepTranslate](https://rapidapi.com/gatzuma/api/deep-translate1) en [ApidRapi](https://rapidapi.com)).
 3. Ajusta los datos de conexión de PostgreSQL en `application.properties`.
 4. Ejecuta el proyecto desde tu IDE o con el comando `mvn spring-boot:run`.
 
