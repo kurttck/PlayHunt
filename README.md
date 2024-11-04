@@ -98,7 +98,7 @@ classDiagram
     +List~Platform~ platforms
   }
   class Platform {
-    +String id
+    +Integer id
     +String name
     +String image
     +List~Game~ games
@@ -106,7 +106,7 @@ classDiagram
 
   class Game_Platform {
     +Integer gameId
-    +String platformId
+    +Integer platformId
   }
 
   Game "1" -- "*" Game_Platform : "relaciona con"
