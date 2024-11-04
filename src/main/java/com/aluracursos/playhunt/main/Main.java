@@ -18,7 +18,7 @@ public class Main {
     private Scanner scan = new Scanner(System.in);
     private ApiConsumer apiConsumer = new ApiConsumer();
     private final String URL_BASE ="https://api.rawg.io/api/";
-    private final String API_KEY = "f31bea0451b9489e81710fa3dbf513cd";
+    private final String API_KEY = System.getenv("KEY_RAWG");
     private GameRepository gameRepository;
     private PlatformRepository platformRepository;
     private DataConvert dataConvert = new DataConvert();
@@ -31,7 +31,7 @@ public class Main {
 
     public void menu() throws UnsupportedEncodingException {
         int option=0;
-        System.out.println("********* BIENVENIDO A PLAYHUNT *********");
+        System.out.println("********* BIENVENIDO A PLAYHUNT GAME MANAGER *********");
         while (option != 3) {
             System.out.println("\n*** Menu Principal ***");
             System.out.println("""
@@ -132,9 +132,9 @@ public class Main {
     }
 
     public void registerGameForName() throws UnsupportedEncodingException {
-        List<Plataform> plataformVerification = platformRepository.findAll();
+        List<Platform> platformVerification = platformRepository.findAll();
 
-        if(plataformVerification.isEmpty()){
+        if(platformVerification.isEmpty()){
             registerAllConsoles();
         }
 
@@ -146,20 +146,21 @@ public class Main {
 
 
             Game game = new Game(dataGame);
-            List<Plataform> plataforms = new ArrayList<>();
+            List<Platform> platforms = new ArrayList<>();
             for(DataGame.Platforms platformData : dataGame.platforms()){
                 DataGame.Platforms.Platform platform = platformData.platform();
 
-                Optional<Plataform> plataformOptional = platformRepository.findByName(platform.name());
+                Optional<Platform> platformOptional = platformRepository.findByName(platform.name());
 
-                if(plataformOptional.isPresent()){
-                    plataforms.add(plataformOptional.get());
+                if(platformOptional.isPresent()){
+                    platforms.add(platformOptional.get());
                 };
             }
 
-            game.setPlataforms(plataforms);
+            game.setPlatforms(platforms);
             String genreValidation = dataGame.genres().isEmpty() ? "" : dataGame.genres().get(0).name();
-            showGame(game.getName(), game.getDescription(), game.getPlataforms().stream().map(Plataform::getName).collect(Collectors.joining(", ")), genreValidation, game.getRating(), game.getReleaseDate().toString());
+
+            showGame(game);
 
             try{
                 gameRepository.save(game);
@@ -173,11 +174,11 @@ public class Main {
     public void registerAllConsoles(){
 
         var json = apiConsumer.getData(URL_BASE+"platforms?key="+API_KEY);
-        DataPlataform dataPlatform = dataConvert.convert(json, DataPlataform.class);
+        DataPlatform dataPlatform = dataConvert.convert(json, DataPlatform.class);
 
         dataPlatform.results().forEach(e-> {
-            Plataform plataform = new Plataform(e.name(), e.imageBackground());
-            platformRepository.save(plataform);
+            Platform platform = new Platform(e.name(), e.imageBackground());
+            platformRepository.save(platform);
         });
     }
 
@@ -232,14 +233,7 @@ public class Main {
     public void queryAllGames(){
         List<Game> games = gameRepository.findAllWithPlatforms();
 
-        games.forEach(e->{
-            String platforms = e.getPlataforms().stream()
-                    .map(Plataform::getName)
-                    .collect(Collectors.joining(", "));
-            String genreValidation = e.getGenre() != null ? e.getGenre().name() : "";
-
-            showGame(e.getName(), e.getDescription(), platforms, genreValidation, e.getRating(), e.getReleaseDate().toString());
-        });
+        games.forEach(e->showGame(e));
     }
 
     public void queryGamesByConsole(){
@@ -255,16 +249,16 @@ public class Main {
             return;
         }
 
-        List<Plataform> plataforms = platformRepository.findPlatformsByName(console);
+        List<Platform> platforms = platformRepository.findPlatformsByName(console);
 
-        String platformsShow = plataforms.stream()
-                .map(Plataform::getName)
+        String platformsShow = platforms.stream()
+                .map(Platform::getName)
                 .collect(Collectors.joining(", "));
 
         System.out.println("\nJuegos de la consola : "+platformsShow);
         games.forEach(e->{
-            String platformsPerGame = e.getPlataforms().stream()
-                    .map(Plataform::getName)
+            String platformsPerGame = e.getPlatforms().stream()
+                    .map(Platform::getName)
                     .collect(Collectors.joining(", "));
             System.out.println("Juego: "+e.getName()+" ("+platformsPerGame+")");
         });
@@ -289,15 +283,7 @@ public class Main {
 
         List<Game> games = gameRepository.findByGenre(genreEnum);
 
-        games.forEach(e->{
-            String platforms = e.getPlataforms().stream()
-                    .map(Plataform::getName)
-                    .collect(Collectors.joining(", "));
-
-            String genreValidation = e.getGenre() != null ? e.getGenre().name() : "";
-
-            showGame(e.getName(), e.getDescription(), platforms, genreValidation, e.getRating(), e.getReleaseDate().toString());
-        });
+        games.forEach(e->showGame(e));
 
     }
 
@@ -314,13 +300,7 @@ public class Main {
             System.out.println("No se encontraron juegos con el nombre: "+nameGame);
             return;
         }
-        games.forEach(e->{
-            String platforms = e.getPlataforms().stream()
-                    .map(Plataform::getName)
-                    .collect(Collectors.joining(", "));
-
-            showGame(e.getName(), e.getDescription(), platforms, e.getGenre().name(), e.getRating(), e.getReleaseDate().toString());
-        });
+        games.forEach(e->showGame(e));
     }
 
     public void queryTopGames(){
@@ -328,17 +308,10 @@ public class Main {
 
         System.out.println("***** Top 10 Juegos *****\n");
         AtomicInteger count= new AtomicInteger(1);
-        games.forEach(e->{
-            String platforms = e.getPlataforms().stream()
-                    .map(Plataform::getName)
-                    .collect(Collectors.joining(", "));
-
-            System.out.println(count+"."+e.getName()+" ("+e.getRating()+") Consolas: "+platforms+".");
-            count.getAndIncrement();
-        });
+        games.forEach(e-> showGame(e));
     }
 
-    public void showGame(String name, String description, String platform, String genre, double rating, String releaseDate){
+   /* public void showGame(String name, String description, String platform, String genre, double rating, String releaseDate){
 
         System.out.printf("""
                     ***********************
@@ -350,5 +323,24 @@ public class Main {
                     Fecha de lanzamiento: %s
                     ***********************
                     """, name, description, platform, genre, rating, releaseDate);
+    }*/
+
+    public void showGame(Game g){
+        String platforms = g.getPlatforms().stream()
+                .map(Platform::getName)
+                .collect(Collectors.joining(", "));
+
+        String genreValidation = g.getGenre() != null ? g.getGenre().name() : "";
+
+        System.out.printf("""
+                    ***********************
+                    Juego: %s
+                    Descripción: %s
+                    Consolas: %s
+                    Género: %s
+                    Rating: %.2f
+                    Fecha de lanzamiento: %s
+                    ***********************
+                    """, g.getName(), g.getDescription(), platforms, genreValidation, g.getRating(), g.getReleaseDate());
     }
 }

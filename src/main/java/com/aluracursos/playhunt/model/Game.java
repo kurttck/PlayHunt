@@ -32,11 +32,11 @@ public class Game {
 
     @ManyToMany
     @JoinTable(
-            name = "game_plataform",
+            name = "game_platform",
             joinColumns = @JoinColumn(name = "id_game"),
-            inverseJoinColumns = @JoinColumn(name = "id_plataform")
+            inverseJoinColumns = @JoinColumn(name = "id_platform")
     )
-    private List<Plataform> plataforms;
+    private List<Platform> platforms;
 
     public Game(){
 
@@ -62,9 +62,9 @@ public class Game {
             this.genre = null;
         }
 
-        this.plataforms = new ArrayList<>();
-        for(DataGame.Platforms plataform : dataGame.platforms()){
-            this.plataforms.add(new Plataform(plataform.platform().name()));
+        this.platforms = new ArrayList<>();
+        for(DataGame.Platforms platform : dataGame.platforms()){
+            this.platforms.add(new Platform(platform.platform().name()));
         }
     }
 
@@ -78,7 +78,7 @@ public class Game {
                 ", poster='" + poster + '\'' +
                 ", rating=" + rating +
                 ", genre='" + genre + '\'' +
-                ", plataforms=" + plataforms +
+                ", plataforms=" + platforms +
                 '}';
     }
 
@@ -138,11 +138,11 @@ public class Game {
         this.genre = genre;
     }
 
-    public List<Plataform> getPlataforms() {
-        return plataforms;
+    public List<Platform> getPlatforms() {
+        return platforms;
     }
 
-    public void setPlataforms(List<Plataform> plataforms) {
-        this.plataforms = plataforms;
+    public void setPlatforms(List<Platform> platforms) {
+        this.platforms = platforms;
     }
 }

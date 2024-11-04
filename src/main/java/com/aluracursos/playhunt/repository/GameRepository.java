@@ -11,19 +11,19 @@ import java.util.List;
 @Repository
 public interface GameRepository extends JpaRepository<Game, Integer> {
 
-    @Query("select g from Game g join fetch g.plataforms where g.genre ilike :genre")
+    @Query("select g from Game g join fetch g.platforms where g.genre ilike :genre")
     List<Game> findByGenre(Genre genre);
 
-    @Query("SELECT g FROM Game g JOIN FETCH g.plataforms")
+    @Query("SELECT g FROM Game g JOIN FETCH g.platforms")
     List<Game> findAllWithPlatforms();
 
-    @Query("select g from Game g join fetch g.plataforms where g.name ilike %:nameGame%")
+    @Query("select g from Game g join fetch g.platforms where g.name ilike %:nameGame%")
     List<Game> findGamesByName(String nameGame);
 
-    @Query("select g from Game g join fetch g.plataforms p where p.name ilike %:nameConsole%")
+    @Query("select g from Game g join fetch g.platforms p where p.name ilike %:nameConsole%")
     List<Game> findGamesByConsole(String nameConsole);
 
-    @Query("select g from Game g join fetch g.plataforms p order by g.rating desc limit 10")
+    @Query("select g from Game g join fetch g.platforms p order by g.rating desc limit 10")
     List<Game> findTop10Games();
 
 }

@@ -5,12 +5,12 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name="plataforms")
-public class Plataform {
+@Table(name="platforms")
+public class Platform {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id_plataform")
+    @Column(name="id_platform")
     private int id;
 
     @Column(unique = true)
@@ -18,12 +18,12 @@ public class Plataform {
 
     private String image;
 
-    @ManyToMany(mappedBy = "plataforms", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "platforms", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Game> game;
 
     @Override
     public String toString() {
-        return "Plataform{" +
+        return "Platform{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", image='" + image + '\'' +
@@ -31,17 +31,17 @@ public class Plataform {
     }
 
 
-    public Plataform(){
+    public Platform(){
 
     }
 
-    public Plataform( String name, String image) {
+    public Platform(String name, String image) {
 
         this.name = name;
         this.image = image;
     }
 
-    public Plataform(String name){
+    public Platform(String name){
         this.name = name;
     }
 
